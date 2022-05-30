@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Quizzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@300&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      font-family: "Londrina Solid";
+      border-radius: 5px;
+    }
+
+    .hide {
+      display: none !important;
+    }
+
+    .confirmation {
+      display: grid;
+      gap: 1rem;
+      grid-auto-flow: column;
+    }
+
+    .confirm {
+      background-color: seagreen;
+    }
+
+    .cancel {
+      background-color: tomato;
+    }
+
+    li {
+      padding: 1em;
+      margin-bottom: 2rem;
+    }
+
+    hr {
+      margin-block: 0.5rem;
+      border: dashed 0.001px rgb(184, 184, 184);
+    }
+    
+    input, button, textarea, #quiz-Q, #quiz-answer {
+      font-size: 1.5rem;
+      display: block;
+      resize: none;
+      width: 100%;
+    }
+
+    input, button, textarea, ol, #quiz-answer {
+      border: hsl(136, 0%, 80%) solid 1px;
+    }
+
+    textarea:focus {
+      outline: none;
+    }
+
+    textarea, ol, #quiz-answer {
+      background-color: hsl(136, 0%, 95%);
+    }
+
+    textarea {
+      padding: 1rem;
+      transition: 250ms;
+    }
+
+    ol {
+      padding-block: 1rem;
+      transition: 250ms;
+    }
+
+    h1 {
+      font-size: 6rem;
+      padding: 0;
+    }
+
+    button {
+      height: 4rem;
+      width: 100%;
+      transition: 250ms;
+      background-color: hsl(136, 0%, 90%);
+    }
+
+    .lowerButtons > button {
+      display: inline;
+    }
+
+    p {
+      font-size: 1.5rem;
+      word-wrap: break-word;
+    }
+
+    button:hover, textarea:hover, ol:hover {
+      transform: scale(1.03);
+    }
+
+    button:active {
+      transform: scale(1);
+    }
+
+    ::-webkit-scrollbar {
+      width: 0.75rem;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: rgb(218, 218, 218);
+      border-radius: 1rem;
+    }
+
+    :hover::-webkit-scrollbar-thumb {
+      background-color: rgb(205, 205, 205);
+    }
+  </style>
+  <script>
+    function getP(text) {
+      const p = document.createElement("p")
+      p.innerText = text
+      return p
+    }
+
+    
+    function addQAToDOM(question, answer) {
+      const QA_List = document.querySelector("#QA_List")
+      const li = document.createElement("li")
+      
+      li.appendChild(getP(question))
+      li.appendChild(document.createElement("hr"))
+      li.appendChild(getP(answer))
+      
+      QA_List.appendChild(li)
+      QA_List.scrollTop = QA_List.scrollHeight
+    }
+
+
+    function confirm(event, onceConfirmed) {
+      element = event.target
+      parent = element.parentNode
+      
+      element.classList.add("hide")
+
+      const confirmationDiv = document.createElement("div")
+      confirmationDiv.classList.add("confirmation")
+
+      const confirm = document.createElement("button")
+      confirm.classList.add("confirm")
+      confirm.innerText = "Confirm"
+      confirm.onclick = () => {
+        onceConfirmed()
+        element.classList.remove("hide")
+        confirmationDiv.remove()
+      }
+      confirmationDiv.appendChild(confirm)
+
+      const cancel = document.createElement("button")
+      cancel.classList.add("cancel")
+      cancel.innerText = "Cancel"
+      cancel.onclick = () => {
+        element.classList.remove("hide")
+        confirmationDiv.remove()
+      }
+      confirmationDiv.appendChild(cancel)
+
+      parent.appendChild(confirmationDiv)
+    }
+
+
+    function clearList(event) {
+      if(localStorage.getItem("QA_List")) {
+        confirm(event, () => {
+          localStorage.removeItem("QA_List")
+          document.querySelectorAll("#QA_List > li").forEach(li => li.remove())
+          noneFound()
+        })
+      }
+    }
+
+
+    function noneFound() {
+      if(!document.getElementById("none-found")) {
+        none_found = document.createElement("p")
+        none_found.innerText = "No questions submitted yet."
+        none_found.id = "none-found"
+        document.querySelector("#QA_List").appendChild(none_found)
+      }
+    }
+
+
+    window.onload = () => {
+      QA_List = JSON.parse(localStorage.getItem("QA_List"))
+          
+      if(QA_List) {
+        QA_List.forEach(QA_Item => {
+          const {question, answer} = QA_Item
+          addQAToDOM(question, answer)
+        })
+      }
+      
+      else noneFound()
+
+
+      if(localStorage.getItem("quiz-QA_List")) {
+        takeQuiz()
+      }
+    }
+
+    
+    function onSubmit(event) {
+      const question = document.querySelector("#Q").value
+      const answer = document.querySelector("#A").value
+
+      let previousQA_List = JSON.parse(localStorage.getItem("QA_List"))
+      if(previousQA_List == null) previousQA_List = Array.of()
+      localStorage.setItem("QA_List", JSON.stringify([...previousQA_List, {question, answer}]))
+
+      addQAToDOM(question, answer)
+      event.preventDefault()
+
+      document.querySelector("#Q").value = ""
+      document.querySelector("#A").value = ""
+      document.getElementById("none-found")?.remove()
+    }
+
+    
+    function takeQuiz() {
+      QA_List = JSON.parse(localStorage.getItem("QA_List"))
+      
+      if(QA_List) {
+        localStorage["quiz-QA_List"] = JSON.stringify(QA_List)
+
+        document.getElementById("quiz").classList.remove("hide")
+        document.getElementById("submit").classList.add("hide")
+
+        giveQuestion()
+      }
+    }
+
+
+    function leaveQuiz() {
+      clear()
+      document.getElementById("quiz").classList.add("hide")
+      document.getElementById("submit").classList.remove("hide")
+      localStorage.removeItem("quiz-QA_List")
+    }
+
+
+    function giveQuestion() {
+      clear()
+      quizQuestions = JSON.parse(localStorage.getItem("quiz-QA_List"))
+
+      if(quizQuestions.length == 0) leaveQuiz()
+      else {
+        questionToAsk = JSON.parse(localStorage.getItem("current-quiz-question"))
+        if(!questionToAsk) questionToAsk = quizQuestions[Math.floor(Math.random() * quizQuestions.length)]
+        localStorage["current-quiz-question"] = JSON.stringify(questionToAsk)
+        document.getElementById("quiz-Q").innerText = questionToAsk["question"]
+        document.getElementById("reveal-answer").onclick = (event) => confirm(event, () => {
+          document.getElementById("quiz-answer").innerText = questionToAsk["answer"]
+
+          quizSubmit = document.getElementById("quiz-submit")
+          quizSubmit.innerText = "Next Question"
+          quizSubmit.onclick = (event) => {
+            onQuizSubmit(event)
+            quizSubmit.innerText = "Submit"
+            quizSubmit.onclick = onQuizSubmit
+          }
+        })
+        document.getElementById("quiz-submit").onclick = event => {
+          quizQuestions.splice(quizQuestions.indexOf(questionToAsk), 1)
+          localStorage.setItem("quiz-QA_List", JSON.stringify(quizQuestions))
+          onQuizSubmit(event)
+        }
+      }
+    }
+
+
+    function onQuizSubmit(event) {
+      event.preventDefault()
+      localStorage.removeItem("current-quiz-question")
+      giveQuestion()
+    }
+
+
+    function clear() {
+      document.getElementById("quiz-answer").innerText = ""
+      document.getElementById("quiz-Q").innerText = ""
+      document.getElementById("quiz-A").value = ""
+    }
+  </script>
+</head>
+
+<body style="height: 100vh; width: 100vw; display: grid; grid-template-rows: 1fr 3fr; grid-auto-flow: row; flex-direction: column; place-items: center; padding: 1rem; padding-bottom: 2.5rem">
+  <h1>Quizzer</h1>
+  <div id="submit" style="display: grid; grid-auto-flow: column; grid-template-columns: 1fr 1fr; width: 90%; height: 90%; gap: 3rem">
+    <form onsubmit="onSubmit(event)" style="display: grid">
+      <div style="display: grid; gap: 1rem">
+        <textarea name="Q" id="Q" type="text" placeholder="Question" required=true></textarea>
+        <textarea name="A" id="A" type="text" placeholder="Answer"></textarea>
+      </div>
+      <div style="display: flex; flex-direction: column; margin-top: auto">
+        <div style="display: grid; gap: 1rem">
+          <button type="submit">Submit</button>
+          <button type="button" onclick="takeQuiz(event)">Take Quiz</button>
+        </div>
+      </div>
+    </form>
+    <div style="display: grid">
+      <ol id="QA_List" style="overflow: hidden; overflow-y: scroll; height: 50vh"></ol>
+      <p class="hide">Nothing submitted yet.</p>
+      <div id="clearlist-container" style="display: flex; flex-direction: column; margin-top: auto">
+        <button id="clearlist" onclick="clearList(event)">Clear List</button>
+      </div>
+    </div>
+  </div>
+  <div id="quiz" class="hide" style="display: grid; grid-auto-flow: column; grid-template-columns: 1fr 1fr; width: 90%; height: 90%; gap: 3rem">
+    <form onsubmit="onQuizSubmit(event)" style="display: grid">
+      <div style="display: grid; gap: 1rem">
+        <textarea disabled="true" id="quiz-Q"></textarea>
+        <textarea name="quiz-A" id="quiz-A" type="text" placeholder="Answer"></textarea>
+      </div>
+      <div style="display: flex; flex-direction: column; margin-top: auto">
+        <div id="leave-quiz-container" style="display: grid; gap: 1rem">
+          <button type="submit" id="quiz-submit">Submit</button>
+          <button type="button" id="leave-quiz" onclick="confirm(event, () => leaveQuiz(event))">Leave Quiz</button>
+        </div>
+      </div>
+    </form>
+    <div style="display: grid">
+      <div id="quiz-answer" style="overflow: hidden; overflow-y: scroll; height: 50vh; padding: 1rem"></div>
+      <div id="reveal-answer-container" style="display: flex; flex-direction: column; margin-top: auto">
+        <button id="reveal-answer">Reveal Answer</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
