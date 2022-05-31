@@ -337,7 +337,7 @@
       realAnswer = JSON.parse(localStorage.getItem("QA_List")).filter(q => q["question"] == question)[0]["answer"]
       realAnswerWords = realAnswer.split(" ")
       
-      if(answer === "" || ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords.length)*100) >= 50) {
+      if(answer === "" || ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords.length)*100) >= 75) {
         localStorage.removeItem("current-quiz-question")
         giveQuestion()
       }
