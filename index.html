@@ -336,9 +336,10 @@
           }, {once: true})
         })
         document.getElementById("quiz-submit").onclick = event => {
-          quizQuestions.splice(quizQuestions.indexOf(questionToAsk), 1)
-          localStorage.setItem("quiz-QA_List", JSON.stringify(quizQuestions))
-          onQuizSubmit(event)
+          if(onQuizSubmit(event)) {
+            quizQuestions.splice(quizQuestions.indexOf(questionToAsk), 1)
+            localStorage.setItem("quiz-QA_List", JSON.stringify(quizQuestions))
+          }
         }
       }
     }
@@ -356,6 +357,7 @@
       if(answer === "" || ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords.length)*100) >= 75) {
         localStorage.removeItem("current-quiz-question")
         giveQuestion()
+        return true
       }
 
       else {
@@ -367,6 +369,7 @@
           {backgroundColor: "tomato"},
           {backgroundColor: io.style.backgroundColor}
         ], {duration: 500})
+        return false
       }
     }
 
