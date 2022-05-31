@@ -230,8 +230,8 @@
     function onSubmit(event) {
       event.preventDefault()
 
-      const question = document.querySelector("#Q").value
-      const answer = document.querySelector("#A").value
+      const question = document.querySelector("#Q").value.trim()
+      const answer = document.querySelector("#A").value.trim()
 
       let previousQA_List = JSON.parse(localStorage.getItem("QA_List"))
       if(previousQA_List == null) previousQA_List = Array.of()
