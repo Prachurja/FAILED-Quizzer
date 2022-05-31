@@ -211,7 +211,7 @@
     window.onload = () => {
       QA_List = JSON.parse(localStorage.getItem("QA_List"))
           
-      if(QA_List) {
+      if(QA_List && QA_List.length > 0) {
         QA_List.forEach(QA_Item => {
           const {question, answer} = QA_Item
           addQAToDOM(question, answer)
@@ -228,15 +228,27 @@
 
     
     function onSubmit(event) {
+      event.preventDefault()
+
       const question = document.querySelector("#Q").value
       const answer = document.querySelector("#A").value
 
       let previousQA_List = JSON.parse(localStorage.getItem("QA_List"))
       if(previousQA_List == null) previousQA_List = Array.of()
-      localStorage.setItem("QA_List", JSON.stringify([...previousQA_List, {question, answer}]))
+      matches = previousQA_List.filter(q => q["question"] == question)
+
+      if(matches.length > 0) {
+        index = previousQA_List.indexOf(matches[0])
+        previousQA_List[index] = {question, answer}
+        document.querySelector(`#QA_List>li:nth-of-type(${index+1})`).remove()
+      }
+
+      else {
+        previousQA_List.push({question, answer})
+      }
 
       addQAToDOM(question, answer)
-      event.preventDefault()
+      localStorage.setItem("QA_List", JSON.stringify(previousQA_List))
 
       document.querySelector("#Q").value = ""
       document.querySelector("#A").value = ""
