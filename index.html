@@ -363,7 +363,6 @@
       if(answerSomewhatCorrect()) {
         localStorage.removeItem("current-quiz-question")
         giveQuestion()
-        return true
       }
 
       else {
@@ -375,7 +374,6 @@
           {backgroundColor: "tomato"},
           {backgroundColor: io.style.backgroundColor}
         ], {duration: 500})
-        return false
       }
     }
 
