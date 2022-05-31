@@ -336,9 +336,9 @@
 
       question = document.getElementById("quiz-Q").value
       answer = document.getElementById("quiz-A").value
-      answerWords = answer.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase().split(" ")
+      answerWords = answer.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase().split(" ").filter(word => word !== "")
       realAnswer = JSON.parse(localStorage.getItem("QA_List")).filter(q => q["question"] == question)[0]["answer"]
-      realAnswerWords = realAnswer.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase().split(" ")
+      realAnswerWords = realAnswer.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase().split(" ").filter(word => word !== "")
 
       if(answer === "" || ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords.length)*100) >= 75) {
         localStorage.removeItem("current-quiz-question")
