@@ -323,11 +323,11 @@
         questionToAsk = JSON.parse(localStorage.getItem("current-quiz-question"))
         if(!questionToAsk) questionToAsk = quizQuestions[Math.floor(Math.random() * quizQuestions.length)]
         localStorage["current-quiz-question"] = JSON.stringify(questionToAsk)
+        quizSubmit = document.getElementById("quiz-submit")
         document.getElementById("quiz-Q").innerText = questionToAsk["question"]
         document.getElementById("reveal-answer").onclick = (event) => confirm(event, () => {
           document.getElementById("quiz-answer").innerText = questionToAsk["answer"]
 
-          quizSubmit = document.getElementById("quiz-submit")
           quizSubmit.innerText = "Next Question"
           quizSubmit.onclick = () => giveQuestion()
           quizSubmit.addEventListener("click", () => {
@@ -335,9 +335,10 @@
             quizSubmit.onclick = onQuizSubmit
           }, {once: true})
         })
-        document.getElementById("quiz-submit").onclick = event => {
+        quizSubmit.onclick = event => {
           quizQuestions.splice(quizQuestions.indexOf(questionToAsk), 1)
           localStorage.setItem("quiz-QA_List", JSON.stringify(quizQuestions))
+          quizSubmit.onclick = onQuizSubmit
           onQuizSubmit(event)
         }
       }
