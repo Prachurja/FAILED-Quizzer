@@ -115,12 +115,15 @@
     }
 
     ::-webkit-scrollbar {
-      width: 0.75rem;
+      width: 1.5rem;
     }
 
     ::-webkit-scrollbar-thumb {
       background-color: rgb(218, 218, 218);
-      border-radius: 1rem;
+      border-radius: 5px;
+      border: hsl(136, 0%, 95%) solid;
+      border-width: 0.3rem;
+      background-clip: padding-box;
     }
 
     :hover::-webkit-scrollbar-thumb {
@@ -330,28 +333,8 @@
 
     function onQuizSubmit(event) {
       event.preventDefault()
-      
-      question = document.getElementById("quiz-Q").value
-      answer = document.getElementById("quiz-A").value
-      answerWords = answer.split(" ")
-      realAnswer = JSON.parse(localStorage.getItem("QA_List")).filter(q => q["question"] == question)[0]["answer"]
-      realAnswerWords = realAnswer.split(" ")
-      
-      if(answer === "" || ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords.length)*100) >= 75) {
-        localStorage.removeItem("current-quiz-question")
-        giveQuestion()
-      }
-      
-      else {
-        io = document.getElementById("quiz-A")
-        io.animate([
-          {backgroundColor: io.style.backgroundColor},
-          {backgroundColor: "tomato"},
-          {backgroundColor: "tomato"},
-          {backgroundColor: "tomato"},
-          {backgroundColor: io.style.backgroundColor}
-        ], {duration: 500})
-      }
+      localStorage.removeItem("current-quiz-question")
+      giveQuestion()
     }
 
 
