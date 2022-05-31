@@ -316,11 +316,11 @@
 
           quizSubmit = document.getElementById("quiz-submit")
           quizSubmit.innerText = "Next Question"
-          quizSubmit.onclick = (event) => {
-            onQuizSubmit(event)
+          quizSubmit.onclick = () => giveQuestion()
+          quizSubmit.addEventListener("click", () => {
             quizSubmit.innerText = "Submit"
             quizSubmit.onclick = onQuizSubmit
-          }
+          }, {once: true})
         })
         document.getElementById("quiz-submit").onclick = event => {
           quizQuestions.splice(quizQuestions.indexOf(questionToAsk), 1)
@@ -336,9 +336,9 @@
 
       question = document.getElementById("quiz-Q").value
       answer = document.getElementById("quiz-A").value
-      answerWords = answer.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase().split(" ").filter(word => word !== "")
+      answerWords = answer.split(" ")
       realAnswer = JSON.parse(localStorage.getItem("QA_List")).filter(q => q["question"] == question)[0]["answer"]
-      realAnswerWords = realAnswer.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase().split(" ").filter(word => word !== "")
+      realAnswerWords = realAnswer.split(" ")
 
       if(answer === "" || ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords.length)*100) >= 75) {
         localStorage.removeItem("current-quiz-question")
