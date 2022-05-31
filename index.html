@@ -336,45 +336,17 @@
           }, {once: true})
         })
         document.getElementById("quiz-submit").onclick = event => {
-          if(answerSomewhatCorrect()) {
-            quizQuestions.splice(quizQuestions.indexOf(questionToAsk), 1)
-            localStorage.setItem("quiz-QA_List", JSON.stringify(quizQuestions))
-          }
-        
+          quizQuestions.splice(quizQuestions.indexOf(questionToAsk), 1)
+          localStorage.setItem("quiz-QA_List", JSON.stringify(quizQuestions))
           onQuizSubmit(event)
         }
       }
     }
-
-
-    function answerSomewhatCorrect() {
-      question = document.getElementById("quiz-Q").value
-      answer = document.getElementById("quiz-A").value
-      answerWords = answer.split(" ")
-      realAnswer = JSON.parse(localStorage.getItem("QA_List")).filter(q => q["question"] == question)[0]["answer"]
-      realAnswerWords = realAnswer.split(" ")
-      
-      return ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords.length)*100) >= 75
-    }
     
     function onQuizSubmit(event) {
       event.preventDefault()
-
-      if(answerSomewhatCorrect()) {
-        localStorage.removeItem("current-quiz-question")
-        giveQuestion()
-      }
-
-      else {
-        io = document.getElementById("quiz-A")
-        io.animate([
-          {backgroundColor: io.style.backgroundColor},
-          {backgroundColor: "tomato"},
-          {backgroundColor: "tomato"},
-          {backgroundColor: "tomato"},
-          {backgroundColor: io.style.backgroundColor}
-        ], {duration: 500})
-      }
+      localStorage.removeItem("current-quiz-question")
+      giveQuestion()
     }
 
 
