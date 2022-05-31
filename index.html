@@ -140,7 +140,7 @@
 
     
     function addQAToDOM(question, answer) {
-      const QA_List = document.querySelector("#QA_List")
+      const QA_List = document.getElementById("QA_List")
       const li = document.createElement("li")
       
       li.appendChild(getP(question))
@@ -148,7 +148,8 @@
       li.appendChild(getP(answer))
       
       QA_List.appendChild(li)
-      QA_List.scrollTop = QA_List.scrollHeight
+      QA_ListContainer = document.getElementById("QA_List-container")
+      QA_ListContainer.scrollTop = QA_ListContainer.scrollHeight
     }
 
 
