@@ -279,7 +279,19 @@
       QA_List = JSON.parse(localStorage.getItem("QA_List"))
       
       if(QA_List) {
-        localStorage["quiz-QA_List"] = JSON.stringify(QA_List)
+        quizQuestions = JSON.parse(localStorage.getItem("quiz-QA_List"))
+        remaining = QA_List.length
+
+        if(quizQuestions === null) {
+          localStorage["quiz-QA_List"] = JSON.stringify(QA_List)
+        }
+
+        else {
+          remaining = quizQuestions.length
+        }
+        
+        document.getElementById("total").innerText = QA_List.length
+        document.getElementById("remaining").innerText = remaining
 
         document.getElementById("quiz").classList.remove("hide")
         document.getElementById("submit").classList.add("hide")
@@ -307,6 +319,7 @@
 
       if(quizQuestions.length == 0) leaveQuiz()
       else {
+        document.getElementById("remaining").innerText = quizQuestions.length
         questionToAsk = JSON.parse(localStorage.getItem("current-quiz-question"))
         if(!questionToAsk) questionToAsk = quizQuestions[Math.floor(Math.random() * quizQuestions.length)]
         localStorage["current-quiz-question"] = JSON.stringify(questionToAsk)
@@ -392,6 +405,11 @@
     </div>
   </div>
   <div id="quiz" class="hide" style="display: grid; grid-auto-flow: column; grid-template-columns: 1fr 1fr; width: 90%; height: 90%; gap: 3rem">
+    <div style="position: absolute; display: grid; justify-items: center; top: 4rem; left: 5rem; transform: rotate(-20deg)">
+      <p id="remaining"></p>
+      <hr style="width: 2rem; border: black solid 1px; background-color: black">
+      <p id="total"></p>
+    </div>
     <form onsubmit="onQuizSubmit(event)" style="display: grid">
       <div style="display: grid; gap: 1rem">
         <textarea disabled="true" id="quiz-Q"></textarea>
