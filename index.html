@@ -336,25 +336,31 @@
           }, {once: true})
         })
         document.getElementById("quiz-submit").onclick = event => {
-          if(onQuizSubmit(event)) {
+          if(answerSomewhatCorrect()) {
             quizQuestions.splice(quizQuestions.indexOf(questionToAsk), 1)
             localStorage.setItem("quiz-QA_List", JSON.stringify(quizQuestions))
           }
+        
+          onQuizSubmit(event)
         }
       }
     }
 
 
-    function onQuizSubmit(event) {
-      event.preventDefault()
-
+    function answerSomewhatCorrect() {
       question = document.getElementById("quiz-Q").value
       answer = document.getElementById("quiz-A").value
       answerWords = answer.split(" ")
       realAnswer = JSON.parse(localStorage.getItem("QA_List")).filter(q => q["question"] == question)[0]["answer"]
       realAnswerWords = realAnswer.split(" ")
+      
+      return answer === "" || ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords.length)*100) >= 75
+    }
+    
+    function onQuizSubmit(event) {
+      event.preventDefault()
 
-      if(answer === "" || ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords.length)*100) >= 75) {
+      if(answerSomewhatCorrect()) {
         localStorage.removeItem("current-quiz-question")
         giveQuestion()
         return true
