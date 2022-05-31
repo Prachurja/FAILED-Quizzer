@@ -330,8 +330,27 @@
 
     function onQuizSubmit(event) {
       event.preventDefault()
-      localStorage.removeItem("current-quiz-question")
-      giveQuestion()
+      
+      question = document.getElementById("quiz-Q").value
+      answer = document.getElementById("quiz-A").value
+      answerWords = answer.split(" ")
+      realAnswer = JSON.parse(localStorage.getItem("QA_List")).filter(q => q["question"] == question)[0]["answer"]
+      realAnswerWords = realAnswer.split(" ")
+      
+      if(answer === "" || ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords)*100) >= 90) {
+        localStorage.removeItem("current-quiz-question")
+        giveQuestion()
+      }
+      
+      else {
+        io = document.getElementById("quiz-A")
+        io.animate([
+          {backgroundColor: io.style.backgroundColor},
+          {backgroundColor: "tomato"},
+          {backgroundColor: "tomato"},
+          {backgroundColor: "tomato"}
+        ], {duration: 500})
+      }
     }
 
 
