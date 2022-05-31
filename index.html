@@ -354,7 +354,7 @@
       realAnswer = JSON.parse(localStorage.getItem("QA_List")).filter(q => q["question"] == question)[0]["answer"]
       realAnswerWords = realAnswer.split(" ")
       
-      return answer === "" || ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords.length)*100) >= 75
+      return realAnswer === "" || ((realAnswerWords.filter(word => answerWords.includes(word)).length / realAnswerWords.length)*100) >= 75
     }
     
     function onQuizSubmit(event) {
